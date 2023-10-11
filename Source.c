@@ -5,131 +5,115 @@
 #include <stdbool.h>
 #include <string.h>
 
-void StartUp() {
-	printf("\t--Application has been launched--\n");
-}
+const static int MAX_PLACE = 15;
 
-struct Place{
+struct Place {
 	int id;
 	int dim;
 	int prix;
 	bool dispo;
 };
 
-int sortieParking(int a) {
-	int randomNumber = (rand() % 6);
-	printf("%d", randomNumber);
-	if (randomNumber > 3) {
-		randomNumber = (rand() % 14);
-		printf("Un vehicule est parti du parking \n");
+void entree(struct Place PlaceParking[], int a, int taille, int taille2, int *recette) {
+	int prix;
+	while (a <= MAX_PLACE) {
+		if (PlaceParking[a].dim == taille || PlaceParking[a].dim == taille2) {
+			if (PlaceParking[a].dispo == true) {
+				PlaceParking[a].dispo = false;
+				printf("Le vehicule a ete garee a la place numero %d \n", PlaceParking[a].id);
+				prix = cagnotte(PlaceParking,recette,a);
+				*recette = *recette + prix;
+				break;
+			}
+			else {
+				a++;
+			}
+		}
+		else {
+			a++;
+		}
 	}
-	return a;
+	if (a > MAX_PLACE) {
+		printf("Il n'y a plus de place dans le parking \n");
+	}
 }
 
-void cagnotte(int prix, int *recette) {
-	recette = recette + prix;
+
+void sortieParking(struct Place PlaceParking[] ) {
+	int randomNumber = (rand() % 6);
+	int placeNumber=0;
+	int prix;
+	if (randomNumber > 3) {
+		do {
+			placeNumber = (rand() % 15);
+		} while (PlaceParking[placeNumber].dispo != false);
+		PlaceParking[placeNumber].dispo = true;
+		printf("Un vehicule est parti de la place %d \n", PlaceParking[placeNumber].id);
+	}
 }
+
+int cagnotte(struct Place PlaceParking[], int recette,int a) {
+	int prix = PlaceParking[a].prix;
+	recette =+ prix;
+	return recette;
+}
+
 
 
 int main() {
-	
-	struct Place PlaceParking[15];
+
+	struct Place PlaceParking[15] = { 0 };
 	srand(time(NULL));
-	const int max_place = 10;
-	signed int parking = 5;
 	signed int i;
-	signed int a = 0;
-	signed int b = 5;
-	signed int c = 10;
-	int *recette = 0;
-	
-	for (i = 0; i <= 3; i++) {
+	int choix = 1;
+	int recette = 0;
+	int* gain = &recette;
+
+
+	for (i = 0; i < MAX_PLACE; i++) {
+		PlaceParking[i].id = i+1;
+		PlaceParking[i].dispo = true;
 		if (i <= 4) {
-			PlaceParking[i].id = i;
 			PlaceParking[i].dim = 1;
 			PlaceParking[i].prix = 5;
-			PlaceParking[i].dispo = true;
 		}
 		else if (i <= 9) {
-			PlaceParking[i].id = i;
 			PlaceParking[i].dim = 2;
 			PlaceParking[i].prix = 10;
-			PlaceParking[i].dispo = true;
 		}
 		else {
-			PlaceParking[i].id = i;
 			PlaceParking[i].dim = 3;
 			PlaceParking[i].prix = 15;
-			PlaceParking[i].dispo = true;
 		}
-	}
 
-	enum Type_Vehicule{
-		Moto = 1,
-		Voiture,
-		Camion,
-		Sortir
-	};
+	}
 	
-	int choix=1;
-	
-	for (i = 0; i < 20; i++) {
+	for (i = 0; i < 10; i++) {
 		printf("Quel est votre vehicule? \n");
 		printf("1) Une moto \n2) Une voiture \n3) Un camion  \nChoix: ");
 		scanf("%d", &choix);
-		printf("\n");
 
-		enum Type_Vehicule MyPanelOption = choix;
 
-		switch (MyPanelOption) {
-		case Moto:
-			while (a<=9) {
-				if (PlaceParking[a].dispo == true)  {
-					PlaceParking[a].dispo = false;
-					printf("La moto a ete garee a la place numero %d \n", PlaceParking[a].id);
-					cagnotte(PlaceParking[a].prix, recette);
-					break;
-				}
-				a++;
-			}
-			if (a > 9) {
-				printf("Il n'y a plus de place dans le parking \n");
-			}
+		switch (choix) {
+		case 1:
+			entree(PlaceParking,0,1,2,gain);
 			break;
-		case Voiture:
-			while (b <= 14) {
-				if (PlaceParking[b].dispo == true) {
-					PlaceParking[b].dispo = false;
-					printf("La voiture a ete garee a la place numero %d \n", PlaceParking[b].id);
-					cagnotte(PlaceParking[a].prix, recette);
-					break;
-				}
-				b++;
-			}
-			if (b > 14) {
-				printf("Il n'y a plus de place dans le parking \n");
-			}
+	
+		case 2:
+			entree(PlaceParking,0,2,3,gain);
 			break;
-		case Camion:
-			while (c <= 14) {
-				if (PlaceParking[c].dispo == true) {
-					PlaceParking[c].dispo = false;
-					printf("La camion a ete garee a la place numero %d \n", PlaceParking[c].id);
-					cagnotte(PlaceParking[a].prix, recette);
-					break;
-				}
-				c++;
-			}
-			if (c > 14) {
-				printf("Il n'y a plus de place dans le parking \n");
-			}
+
+		case 3:
+			entree(PlaceParking,0,3,3,gain);
 			break;
+
 		default:
 			printf("Votre vehicule n'est pas reconnu \n");
 		}
-			parking = sortieParking(parking);
-			PlaceParking[parking].dispo = true;	
+
+		sortieParking(PlaceParking);
+		printf("\n");
 	}
-	printf("La recette du jour est : %d \n ", recette);
+	printf("La recette du jour est : %d euros \n ", recette);
 	return 0;
 }
