@@ -5,6 +5,10 @@
 #include <stdbool.h>
 #include <string.h>
 
+void StartUp() {
+	printf("\t--Application has been launched--\n");
+}
+
 struct Place{
 	int id;
 	int dim;
@@ -28,6 +32,7 @@ void cagnotte(int prix, int *recette) {
 
 
 int main() {
+	
 	struct Place PlaceParking[15];
 	srand(time(NULL));
 	const int max_place = 10;
@@ -38,7 +43,6 @@ int main() {
 	signed int c = 10;
 	int *recette = 0;
 	
-
 	for (i = 0; i <= 3; i++) {
 		if (i <= 4) {
 			PlaceParking[i].id = i;
@@ -58,9 +62,15 @@ int main() {
 			PlaceParking[i].prix = 15;
 			PlaceParking[i].dispo = true;
 		}
-
 	}
 
+	enum Type_Vehicule{
+		Moto = 1,
+		Voiture,
+		Camion,
+		Sortir
+	};
+	
 	int choix=1;
 	
 	for (i = 0; i < 20; i++) {
@@ -69,9 +79,10 @@ int main() {
 		scanf("%d", &choix);
 		printf("\n");
 
+		enum Type_Vehicule MyPanelOption = choix;
 
-		switch (choix) {
-		case 1:
+		switch (MyPanelOption) {
+		case Moto:
 			while (a<=9) {
 				if (PlaceParking[a].dispo == true)  {
 					PlaceParking[a].dispo = false;
@@ -85,7 +96,7 @@ int main() {
 				printf("Il n'y a plus de place dans le parking \n");
 			}
 			break;
-		case 2:
+		case Voiture:
 			while (b <= 14) {
 				if (PlaceParking[b].dispo == true) {
 					PlaceParking[b].dispo = false;
@@ -99,7 +110,7 @@ int main() {
 				printf("Il n'y a plus de place dans le parking \n");
 			}
 			break;
-		case 3:
+		case Camion:
 			while (c <= 14) {
 				if (PlaceParking[c].dispo == true) {
 					PlaceParking[c].dispo = false;
@@ -116,10 +127,8 @@ int main() {
 		default:
 			printf("Votre vehicule n'est pas reconnu \n");
 		}
-
 			parking = sortieParking(parking);
-			PlaceParking[parking].dispo = true;
-			
+			PlaceParking[parking].dispo = true;	
 	}
 	printf("La recette du jour est : %d \n ", recette);
 	return 0;
